@@ -76,7 +76,7 @@ def computeAutoScaling(x,y): #Auto scaling for axes (This function was stolen fr
 
 def plot2D(r,v,normB,N,fig=None,ax=None):
     if (fig is None) and (ax is None):
-        fig,ax = plt.subplots(2,2,figsize=(16,12))
+        fig,ax = plt.subplots(2,2,figsize=(16,9.5))
     if N > 10000:
         size = 0.1
     else:
@@ -90,8 +90,8 @@ def plot2D(r,v,normB,N,fig=None,ax=None):
     c = fig.colorbar(c,ax=ax[0,0])
     c.set_label('|B|',rotation=360)
     ax[0,0].set_xlabel('x')
-    ax[0,0].set_ylabel('Px')
-    ax[0,0].set_title(f'Px versus x (x phase space), J = {round(J,2)}')
+    ax[0,0].set_ylabel(r'$P_x$')
+    ax[0,0].set_title(f'x Phase Space, J = {round(J,2)}')
     ax[0,0].grid()
     ax[0,0].legend()
     
@@ -100,8 +100,8 @@ def plot2D(r,v,normB,N,fig=None,ax=None):
     c = fig.colorbar(c,ax=ax[0,1])
     c.set_label('|B|',rotation=360)
     ax[0,1].set_xlabel('y')
-    ax[0,1].set_ylabel('Py')
-    ax[0,1].set_title(f'Py versus y (y phase space), J = {round(J,2)}')
+    ax[0,1].set_ylabel(r'$P_y$')
+    ax[0,1].set_title(f'y Phase Space, J = {round(J,2)}')
     ax[0,1].grid()
     ax[0,1].legend()
     
@@ -110,8 +110,8 @@ def plot2D(r,v,normB,N,fig=None,ax=None):
     c = fig.colorbar(c,ax=ax[1,0])
     c.set_label('|B|',rotation=360)
     ax[1,0].set_xlabel('z')
-    ax[1,0].set_ylabel('Pz')
-    ax[1,0].set_title(f'Pz versus z (z phase space), J = {round(J,2)}')
+    ax[1,0].set_ylabel(r'$P_z$')
+    ax[1,0].set_title(rf'z Phase Space, J = {round(J,2)}')
     ax[1,0].grid()
     ax[1,0].legend()
   
@@ -120,7 +120,7 @@ def plot2D(r,v,normB,N,fig=None,ax=None):
     c = fig.colorbar(c,ax=ax[1,1])
     c.set_label('|B|',rotation=360)
     ax[1,1].scatter(-a,0,marker='+',c='b',s=50)
-    ax[1,1].scatter(a,0,marker='+',c='b',s=50)
+    ax[1,1].scatter(a,0,marker='+',c='b',s=50,label='Line Current')
     ax[1,1].set_xlabel('x')
     ax[1,1].set_ylabel('y')
     ax[1,1].set_title(f'Real Space Particle Trajectory, J = {round(J,2)}')
@@ -129,18 +129,22 @@ def plot2D(r,v,normB,N,fig=None,ax=None):
     xmin,xmax,ymin,ymax = computeAutoScaling(r[0,1:],r[1,1:])
     ax[1,1].set_xlim(xmin=xmin,xmax=xmax)
     ax[1,1].set_ylim(ymin=ymin,ymax=ymax)
+    plt.show()
     return fig,ax
     
 def plot3D(r,v,normB,fig=None,ax=None):
-    fig = plt.figure(figsize=(16,12)) 
+    fig = plt.figure(figsize=(16,9.5)) 
     size = 5
     J = EOM.J
     a = EOM.a
     
     ax = fig.add_subplot(1,2,1,projection='3d')
     ax.scatter(r[0,0],r[1,0],r[2,0],c='r',marker='*',s=15*size,label='Initial Position')
-    ax.scatter(-a,0,0,marker='+',c='b',s=50)
-    ax.scatter(a,0,0,marker='+',c='b',s=50)
+    aArr = -a*np.ones(2)
+    zroArr = np.zeros(2)
+    zArr = np.asarray([min(r[2,:]),max(r[2,:])])
+    ax.plot(aArr,zroArr,zArr,c='b',label='Line Current')
+    ax.plot(-aArr,zroArr,zArr,c='b')
     c = ax.scatter(r[0,1:],r[1,1:],r[2,1:],c=normB[1:],s=size)
     c = fig.colorbar(c,ax=ax,fraction=0.046,pad=0.1)
     c.set_label('|B|',rotation=360)
@@ -160,12 +164,13 @@ def plot3D(r,v,normB,fig=None,ax=None):
     c = ax.scatter(v[0,1:],v[1,1:],v[2,1:],c=normB[1:],s=size)
     c = fig.colorbar(c,ax=ax,fraction=0.046,pad=0.04)
     c.set_label('|B|',rotation=360)
-    ax.set_xlabel('Px')
-    ax.set_ylabel('Py')
-    ax.set_zlabel('Pz')
+    ax.set_xlabel(r'$P_x$')
+    ax.set_ylabel(r'$P_y$')
+    ax.set_zlabel(r'$P_z$')
     ax.set_title('3D Momentum Space Trajectory')
     ax.grid()
     ax.legend()
+    plt.show()
     
 def plotJ(t0,dt,N,normB):
     time = np.zeros([N+1])
@@ -177,13 +182,14 @@ def plotJ(t0,dt,N,normB):
         func[i] = EOM.f(t)
         time[i] = t
         t += dt
-    plt.figure(figsize=(12,10))
+    plt.figure(figsize=(12,9.5))
     plt.plot(time,func)
     plt.scatter(time,func,c=normB,s=5)
     plt.xlabel('Time (s)')
     plt.ylabel('Current')
     plt.title('Current Profile')
     plt.grid()
+    plt.show()
     
 def plotE(p,t0,dt,N,normB):
     E = np.zeros([p.shape[1]])
@@ -192,7 +198,7 @@ def plotE(p,t0,dt,N,normB):
         E[i] = np.sqrt( np.dot(p[:,i],p[:,i]) )
     var = str(np.var(E))
     length = len(var)
-    plt.figure(figsize=(12,10))
+    plt.figure(figsize=(12,9.5))
     plt.plot(time,E,label=f'Variance of Energy = {var[0:6]+var[length-4:length]}')
     plt.scatter(time,E,c=normB)
     c = plt.colorbar()
@@ -202,6 +208,7 @@ def plotE(p,t0,dt,N,normB):
     plt.ylabel('Total Energy')
     plt.title('Time Evolution of Total Energy')
     plt.legend()
+    plt.show()
 
 # ---------- Simulation Parameters ----------
 
@@ -221,9 +228,9 @@ Bz = 1 # Axial magnetic field, 0.003
 r,v,B = integrateBoris(r0,v0,t0,dt,Bz,N)
 normB = computeBNorm(B,N)
 
+plotJ(t0,dt,N,normB)
 plot3D(r,v,normB)
 plot2D(r,v,normB,N)
-plotJ(t0,dt,N,normB)
 plotE(v,t0,dt,N,normB)
 
 # ---------- Multiple Trajectories ----------
