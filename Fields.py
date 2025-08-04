@@ -33,8 +33,9 @@ def computeAll(x,y,a,f,n,N,func,xMin,yMin,threshold): # Compute fields across en
 
 def normalize(x,y): # Normalize all magnetic field vectors to unit length
     norm = np.sqrt(pow(x,2) + pow(y,2))
-    x /= norm
-    y /= norm
+    with np.errstate(divide='ignore'):
+        x /= norm
+        y /= norm
     return x,y
 
 def findClosestGridPoint(a,X,n): # Find grid point closest to position of line currents
@@ -86,16 +87,16 @@ size = 10 # Size of points that denote wire locations
 fig,ax = plt.subplots(2,2,figsize=(12,10))
 
 ax[0,0].set_title('Az for Parallel Currents')
-im = ax[0,0].imshow(tA/np.max(tA))
-ax[0,0].scatter((-a*dn)/2+n/2,n/2,c='r',s=size,label=r'$J\hat{z}$')
-ax[0,0].scatter((a*dn)/2+n/2,n/2,c='r',s=size,label=r'$J\hat{z}$')
+im = ax[0,0].pcolormesh(x,y,tA/np.max(tA))
+ax[0,0].scatter(-a,0,c='r',label=r'$J\hat{z}$',s=size)
+ax[0,0].scatter(a,0,c='r',label=r'$J\hat{z}$',s=size)
 fig.colorbar(im,ax=ax[0,0])
 ax[0,0].legend()
 
 ax[0,1].set_title('Az for Antiparallel Currents')
-im = ax[0,1].imshow(rA/np.max(rA))
-ax[0,1].scatter((-a*dn)/2+n/2,n/2,c='r',s=size,label=r'$J\hat{z}$')
-ax[0,1].scatter((a*dn)/2+n/2,n/2,c='black',s=size,label=r'-$J\hat{z}$')
+im = ax[0,1].pcolormesh(x,y,rA/np.max(rA))
+ax[0,1].scatter(-a,0,c='r',label=r'$J\hat{z}$',s=size)
+ax[0,1].scatter(a,0,c='black',label=r'-$J\hat{z}$',s=size)
 fig.colorbar(im,ax=ax[0,1])
 ax[0,1].legend()
 
