@@ -14,21 +14,18 @@ J = 10 # Magnitude of current
 d = 4 # Length scale of domain
 
 if usePhysicalUnits:
-    e = 1.6e-19 #Charge in C
-    mu0 = 12.57e-7 #Permiability of free space
-    _coeff = (pow(e,2)*pow(mu0,2)*pow(J,2))/(8*np.pi) #Leading coefficient of equations of motion
-    
-    tau = 50e-6 #Reconnection timescale
-    _w = (2*np.pi)/(factor*tau) #Frequency 
-    
+    e = 1.6e-19 # Charge in Coulombs
+    mu0 = 12.57e-7 # Permiability of free space
+    _coeff = (pow(e,2)*pow(mu0,2)*pow(J,2))/(8*np.pi) # Leading coefficient of equations of motion
+    tau = 50e-6 # Reconnection timescale
+    _w = (2*np.pi)/(factor*tau) # Frequency 
     a = 0.5*0.03 + 0.5*0.076 # x position of line currents in meters
 else:
-    _coeff = J #Setting all united quantities to 1
-    tau = 1 #Reconnection timescale
+    _coeff = J # Setting all united quantities to 1
+    tau = 1 # Reconnection timescale
     #tau = 50e-6
-    _w = (2*np.pi)/(factor*tau) #Frequency 
+    _w = (2*np.pi)/(factor*tau) # Frequency 
     _phi = 0
-    
     a = 1 # x position of line currents
     
 dutyCycle = 0.75 # Duty cycle for square wave current, 0.9
