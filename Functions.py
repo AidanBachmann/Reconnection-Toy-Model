@@ -145,6 +145,7 @@ def computeAutoScaling(x,y): # Auto scaling for axes (This function was stolen f
     return x_low,x_high,y_low,y_high
 
 def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space plots p_i versus r_i for i = x,y,z; plot for real-space particle trajectory flattened along z
+    print('Plotting two-dimensional trajectories.')
     if (fig is None) and (ax is None):
         fig,ax = plt.subplots(2,2,figsize=(16,9.5)) # Define axes
     if N > 10000: # Set size of points for plotting
@@ -204,6 +205,7 @@ def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space
     return fig,ax
     
 def plot3D(r,v,normB,a,fig=None,ax=None): # Plot 3D real-space and momentum-space plots
+    print('Plotting three-dimensional trajectories.')
     fig = plt.figure(figsize=(16,9.5)) # Set figure size
     size = 5 # Set size of points to plot
     
@@ -242,6 +244,7 @@ def plot3D(r,v,normB,a,fig=None,ax=None): # Plot 3D real-space and momentum-spac
     plt.show()
     
 def plotJ(time,current,normB): # Plot current profile
+    print('Plotting current profile.')
     plt.figure(figsize=(12,9.5))
     plt.plot(time,current)
     plt.scatter(time,current,c=normB,s=5) # Plot current profile
@@ -252,15 +255,18 @@ def plotJ(time,current,normB): # Plot current profile
     plt.show()
     
 def plotE(p,time,normB): # Plot total energy as a function of time, compute varaince to check for conservation
+    print('Plotting total energy time series.')
     E = np.sqrt(pow(p[0,:],2) + pow(p[1,:],2) + pow(p[2,:],2))
-    var = str(np.var(E)) # Compute variance of energy
+    var = str(np.var(E)/pow(np.min(E),2)) # Compute variance of energy normalized by smallest energy scale
     length = len(var)
     plt.figure(figsize=(12,9.5))
-    plt.plot(time,E,label=f'Variance of Energy = {var[0:6]+var[length-4:length]}') # Plot energy time series
+    plt.plot(time,E,label=f'Normalized Variance of Energy = {var[0:6]+var[length-4:length]}') # Plot energy time series
     plt.scatter(time,E,c=normB) # Scatter plot on top of line to color with norm of B
     c = plt.colorbar()
     c.set_label('|B|',rotation=360) # Define colorbar
     plt.grid()
+    padding = 0.05 # Padding for y limits
+    plt.ylim([min(E)*(1-padding),max(E)*(1+padding)])
     plt.xlabel('Time (s)')
     plt.ylabel('Total Energy')
     plt.title('Time Evolution of Total Energy')

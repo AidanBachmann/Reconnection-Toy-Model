@@ -31,7 +31,7 @@ else:
     a = 1.0 # x position of line currents
 
 ## Current Profile Settings ##
-currentProfile = 'square' # Current profile. Options are currently: 'sine', 'square'. Add more in Functions.py.
+currentProfile = 'sine' # Current profile. Options are currently: 'sine', 'square'. Add more in Functions.py.
 if currentProfile == 'square':
     dutyCycle = 0.75 # Duty cycle for square wave current
     args = np.asarray([w,dutyCycle]) # Arguments array for current profile function
@@ -42,9 +42,9 @@ else:
     args = None
 
 ## Simulation Time ##
-dt = float(1e-3) # Time step, float() casts to C++ size double
+dt = float(1e-4) # Time step, float() casts to C++ size double
 t0 = float(0) # Initial time
-N = 1000 # Number of time steps
+N = 50000 # Number of time steps
 tArr = np.linspace(t0,t0+N*dt,N+1,dtype='double') # Define time array
 currentArr = funcs.currentProf(tArr,currentProfile,args).astype('double') # Compute current profile
 
