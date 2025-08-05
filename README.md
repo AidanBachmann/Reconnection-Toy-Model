@@ -1,8 +1,9 @@
 <p align="center">
-<img width="950" height="402" alt="3D Trajectories" src="https://github.com/user-attachments/assets/f936c324-2f40-494e-98dd-49509cf12a06" />
+<img width="4800" height="2850" alt="Figure" src="https://github.com/user-attachments/assets/9665a29b-58a3-471e-a877-1089e133b29b" />
 </p>
 <p align="center">
 <em>Particle trajectory in position and momentum space.</em>
 </p>
 
 # Overview
+
