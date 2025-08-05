@@ -82,6 +82,5 @@ dr = EOM.a/10
 dv = 0
 
 _r0,_v0 = initICs(M,r0,dr,v0,dv)
+integrateSeries(_r0,_v0,t0,dt,Bz,N,M)
 '''
-
-#integrateSeries(_r0,_v0,t0,dt,Bz,N,M)

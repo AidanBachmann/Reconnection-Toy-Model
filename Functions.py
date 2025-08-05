@@ -131,6 +131,36 @@ def integrateBoris(r0,v0,dt,Bz,N,a,J,current): # Integrate trajectory for N time
 
 def computeBNorm(B): # Compute magnitude of magnetic field
     return np.sqrt(pow(B[0,:],2) + pow(B[1,:],2) + pow(B[2,:],2))
+
+# ---------- Integrating Multiple Trajectories ----------
+
+'''
+def initICs(M,r0,dr,v0,dv,dimr='x',dimv='x'): # Initialize initial conditions for a collection of simulations
+    return initRVICs(M,r0,dr,dimr),initRVICs(M,v0,dv,dimv)
+
+def initRVICs(M,r0,dr,dim):
+    _r0 = np.zeros([3,M+1])
+    _r0[:,0] = r0
+    if dim == 'x':
+        for i in np.linspace(1,M,M,dtype='int'):
+            _r0[:,i] = np.asarray([_r0[0,i-1]+dr,_r0[1,i-1],_r0[2,i-1]])
+    elif dim == 'y':
+        for i in np.linspace(1,M,M,dtype='int'):
+            _r0[:,i] = np.asarray([_r0[0,i-1],_r0[1,i-1]+dr,_r0[2,i-1]])
+    elif dim == 'z':
+        for i in np.linspace(1,M,M,dtype='int'):
+            _r0[:,i] = np.asarray([_r0[0,i-1],_r0[1,i-1],_r0[2,i-1]+dr])
+    return _r0
+
+def integrateSeries(_r0,_v0,t0,dt,Bz,N,M,f=EOM.f,a=EOM.a): # Run simulations for a collection of initial conditions
+    fig,ax = None,None
+    for i in np.linspace(0,M,M+1,dtype='int'):
+        r0,v0 = _r0[:,i],_v0[:,i]
+        r,v,B = integrateBoris(r0,v0,t0,dt,Bz,N,f=EOM.f,a=EOM.a)
+        normB = computeBNorm(B,N)
+        fig,ax = plot2D(r,v,normB,fig,ax)
+        plot3D(r,v,normB)
+'''
     
 # ---------- Visualization ----------
 
