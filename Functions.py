@@ -174,7 +174,7 @@ def computeAutoScaling(x,y): # Auto scaling for axes (This function was stolen f
     
     return x_low,x_high,y_low,y_high
 
-def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space plots p_i versus r_i for i = x,y,z; plot for real-space particle trajectory flattened along z
+def plot2D(r,v,normB,N,a,J,time,fig=None,ax=None): # Make two dimensional phase space plots p_i versus r_i for i = x,y,z; plot for real-space particle trajectory flattened along z
     print('Plotting two-dimensional trajectories.')
     if (fig is None) and (ax is None):
         fig,ax = plt.subplots(2,2,figsize=(16,9.5)) # Define axes
@@ -182,15 +182,18 @@ def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space
         size = 0.1
     else:
         size = 5
+    time = plt.cm.hsv(time/np.max(time))
     
     # All particle trajectories have a colormap set by the magnitude of the magnetic field at the location of the particle for the time step in question. 
     # This is to help understand why specific kinks or deflections occur in the trajectory (for example, locations where the field is large correspond 
     # to the most extreme bending of the particle trajectory).
 
     ax[0,0].scatter(r[0,0],v[0,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot x phase space
-    c = ax[0,0].scatter(r[0,1:],v[0,1:],c=normB[1:],s=size)
-    c = fig.colorbar(c,ax=ax[0,0])
-    c.set_label('|B|',rotation=360)
+    #c = ax[0,0].scatter(r[0,1:],v[0,1:],c=normB[1:],s=size)
+    c = ax[0,0].scatter(r[0,1:],v[0,1:],c=time[1:],s=size)
+    c = fig.colorbar(c,ax=ax[0,0],cmap='hsv')
+    #c.set_label('|B|',rotation=360)
+    c.set_label('Time (s)',rotation=360)
     ax[0,0].set_xlabel('x')
     ax[0,0].set_ylabel(r'$P_x$')
     ax[0,0].set_title(f'x Phase Space, J = {round(J,2)}')
@@ -198,9 +201,11 @@ def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space
     ax[0,0].legend()
     
     ax[0,1].scatter(r[1,0],v[1,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot y phase space
-    c = ax[0,1].scatter(r[1,1:],v[1,1:],c=normB[1:],s=size)
-    c = fig.colorbar(c,ax=ax[0,1])
-    c.set_label('|B|',rotation=360)
+    #c = ax[0,1].scatter(r[1,1:],v[1,1:],c=normB[1:],s=size)
+    c = ax[0,1].scatter(r[1,1:],v[1,1:],c=time[1:],s=size)
+    c = fig.colorbar(c,ax=ax[0,1],cmap='hsv')
+    #c.set_label('|B|',rotation=360)
+    c.set_label('Time (s)',rotation=360)
     ax[0,1].set_xlabel('y')
     ax[0,1].set_ylabel(r'$P_y$')
     ax[0,1].set_title(f'y Phase Space, J = {round(J,2)}')
@@ -208,9 +213,11 @@ def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space
     ax[0,1].legend()
     
     ax[1,0].scatter(r[2,0],v[2,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot z phase space
-    c = ax[1,0].scatter(r[2,1:],v[2,1:],c=normB[1:],s=size)
-    c = fig.colorbar(c,ax=ax[1,0])
-    c.set_label('|B|',rotation=360)
+    #c = ax[1,0].scatter(r[2,1:],v[2,1:],c=normB[1:],s=size)
+    c = ax[1,0].scatter(r[2,1:],v[2,1:],c=time[1:],s=size)
+    c = fig.colorbar(c,ax=ax[1,0],cmap='hsv')
+    #c.set_label('|B|',rotation=360)
+    c.set_label('Time (s)',rotation=360)
     ax[1,0].set_xlabel('z')
     ax[1,0].set_ylabel(r'$P_z$')
     ax[1,0].set_title(rf'z Phase Space, J = {round(J,2)}')
@@ -218,9 +225,11 @@ def plot2D(r,v,normB,N,a,J,fig=None,ax=None): # Make two dimensional phase space
     ax[1,0].legend()
   
     ax[1,1].scatter(r[0,0],r[1,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot real-space trajectory flattened to xy plane
-    c = ax[1,1].scatter(r[0,1:],r[1,1:],c=normB[1:],s=size)
-    c = fig.colorbar(c,ax=ax[1,1])
-    c.set_label('|B|',rotation=360)
+    #c = ax[1,1].scatter(r[0,1:],r[1,1:],c=normB[1:],s=size)
+    c = ax[1,1].scatter(r[0,1:],r[1,1:],c=time[1:],s=size)
+    c = fig.colorbar(c,ax=ax[1,1],cmap='hsv')
+    #c.set_label('|B|',rotation=360)
+    c.set_label('Time (s)',rotation=360)
     ax[1,1].scatter(-a,0,marker='+',c='b',s=50) # Draw position of lines currents in xy plane
     ax[1,1].scatter(a,0,marker='+',c='b',s=50,label='Line Current')
     ax[1,1].set_xlabel('x')

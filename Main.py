@@ -44,7 +44,7 @@ else:
 ## Simulation Time ##
 dt = float(1e-4) # Time step, float() casts to C++ size double
 t0 = float(0) # Initial time
-N = 50000 # Number of time steps
+N = int(1e3) # Number of time steps
 tArr = np.linspace(t0,t0+N*dt,N+1,dtype='double') # Define time array
 currentArr = funcs.currentProf(tArr,currentProfile,args).astype('double') # Compute current profile
 
@@ -61,12 +61,12 @@ start = time.time()
 r,v,B = funcs.integrateBoris(r0,v0,dt,Bz,N,a,J,currentArr) # Integrate trajectory
 normB = funcs.computeBNorm(B) # Compute field magnitude along trajectory
 end = time.time()
-print(f'Finished simulation in {end-start} seconds.')
+print(f'Finished simulation in {end-start} seconds.\n')
 
-funcs.plotJ(tArr,currentArr,normB) # Plot results
-funcs.plot3D(r,v,normB,a)
-funcs.plot2D(r,v,normB,N,a,J)
-funcs.plotE(v,tArr,normB)
+#funcs.plotJ(tArr,currentArr,normB) # Plot results
+#funcs.plot3D(r,v,normB,a)
+funcs.plot2D(r,v,normB,N,a,J,tArr)
+#funcs.plotE(v,tArr,normB)
 
 if showFields: # Plot magnetic field and vector potential
     funcs.showFields(a,d,J)
