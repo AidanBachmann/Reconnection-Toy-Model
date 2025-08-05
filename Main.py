@@ -42,17 +42,17 @@ dt = 1e-4 # Time step
 t0 = 0 # Initial time
 N = 250000 # Number of time steps
 
-funcs.printParams(dt,tau,t0,N,currentProfile,Bz,J) # Print simulation parameters to terminal
-
-'''
 ## Initial Conditions ##
-r0 = np.asarray([EOM.a,1e-3,0]) # Particle initial position
+r0 = np.asarray([a,1e-3,0]) # Particle initial position
 v0 = np.asarray([3,-1,1]) # Particle initial velocity
+
+funcs.printParams(dt,tau,t0,N,currentProfile,Bz,J,r0,v0) # Print simulation parameters to terminal
+
 
 dir = 'Fields/' # Directory to save figures
 
 # ---------- Simulation ----------
-
+'''
 r,v,B = integrateBoris(r0,v0,t0,dt,Bz,N) # Integrate trajectory
 normB = computeBNorm(B,N) # Compute field magnitude along trajectory
 
@@ -64,12 +64,14 @@ plotE(v,t0,dt,N,normB)
 
 # ---------- Multiple Trajectories ----------
 
-'''M = 10 #Number of trajectories to integrate
+'''
+M = 10 #Number of trajectories to integrate
 r0 = np.asarray([-EOM.a/2,-EOM.a/2,0])
 v0 = np.asarray([1e-2,1e-2,0])
 dr = EOM.a/10
 dv = 0
 
-_r0,_v0 = initICs(M,r0,dr,v0,dv)'''
+_r0,_v0 = initICs(M,r0,dr,v0,dv)
+'''
 
 #integrateSeries(_r0,_v0,t0,dt,Bz,N,M)

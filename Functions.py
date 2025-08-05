@@ -9,25 +9,10 @@ import matplotlib.pyplot as plt
 
 # ---------- Debugging ----------
 
-def printParams(dt,tau,t0,N,current,Bz,J): # Print simulation parameters to terminal
+def printParams(dt,tau,t0,N,current,Bz,J,r0,v0): # Print simulation parameters to terminal (yes, this is unwieldy)
     print(f'\033[1mSimulation Parameters\033[0m\nTime step: {dt}s\nNumber of Time Steps: {N}\nInitial Time: {t0}s\nFinal Time: {t0+(N+1)*dt}s')
-    print(f'Reconnection Time Scale: {tau}s\nCurrent Profile: {current}\nAxial Magnetic Field: {Bz}\nCurrent Magnitude: {J}\n')
-
-# ---------- Visualization Parameters ----------
-
-def defineGrid(d,theshold=0,N=101,useNorm=True): # Define meshgrid parameters for visualizing fields
-    N = 101 # Number of grid points
-    lb = -d/2 # Domain Lower bound
-    ub = d/2 # Domain upper bound
-    n = N-1 # Number of points minus 1, useful for indexing
-    dn = n/ub # Points per unit length
-
-    X = np.linspace(lb,ub,N) # Create array for meshgrid based on parameters
-    x,y = np.meshgrid(X,X) # Initialize meshgrid
-    sign = 1 # Controls sign of the current
-
-    useNorm = True # Use normalized arrows on quiver plot
-    threshold = 0 # Threshold for where to set A,B = 0 (0.99), used to avoid singularities
+    print(f'Reconnection Time Scale: {tau}s\nCurrent Profile: {current}\nAxial Magnetic Field: {Bz}\nCurrent Magnitude: {J}')
+    print(f'Initial Position: ({r0[0]},{r0[1]},{r0[2]})m\nInitial Velocity: ({v0[0]},{v0[1]},{v0[2]})m/s\n')
 
 # ---------- Current Profile ----------
     
@@ -47,3 +32,17 @@ def currentProf(t,profileType,args): # Return current profile; t is time array, 
         print('Unrecognized current profile, defaulting to constant.')
         return np.ones([len(t)]) # Constant current profile
     
+# ---------- Visualization ----------
+
+def defineGrid(d,theshold=0,N=101,useNorm=True): # Define meshgrid parameters for visualizing fields
+    # d is domain length, threshold defines where to set A,B = 0 to avoid singularities,
+    # N is number of grid points, useNorm is boolean flag to set normalization
+    N = 101 # Number of grid points
+    lb = -d/2 # Domain Lower bound
+    ub = d/2 # Domain upper bound
+    n = N-1 # Number of points minus 1, useful for indexing
+    dn = n/ub # Points per unit length
+
+    X = np.linspace(lb,ub,N) # Create array for meshgrid based on parameters
+    x,y = np.meshgrid(X,X) # Initialize meshgrid
+    sign = 1 # Controls sign of the current
