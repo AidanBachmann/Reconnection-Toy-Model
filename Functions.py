@@ -21,16 +21,16 @@ def currentProf(t,profileType,args): # Return current profile; t is time array, 
         # args must by an array of the form args = np.asarray([w,dutyCycle]), define in main
         w = args[0]
         dutyCycle = args[1]
-        return signal.square(w*t,duty=dutyCycle) # Square wave with frequency 2πω and duty cycle dutyCycle, extends from -1 to 1
+        return signal.square(w*t,duty=dutyCycle).astype('double') # Square wave with frequency 2πω and duty cycle dutyCycle, extends from -1 to 1
     elif profileType == 'sine':
         # args must by an array of the form args = np.asarray([w,phi]), define in main
         w = args[0]
         phi = args[1]
-        return np.cos(w*t+phi) # Sinusoidal current profile with frequency ω and phase shift phi
+        return np.cos(w*t+phi).astype('double') # Sinusoidal current profile with frequency ω and phase shift phi
         ## Add extra elif statements below to define new current profiles ##
     else:
         print('Unrecognized current profile, defaulting to constant.')
-        return np.ones([len(t)]) # Constant current profile
+        return np.ones([len(t)]).astype('double') # Constant current profile
     
 # ---------- Equations of Motion ----------
 # These functions are deprecated, they were to be used in an old version with a leapfrog integrator. 
@@ -44,8 +44,9 @@ def pyDot(x,y,a,idx,current,coeff): # Equation of motion in y
 # ---------- Generate A and B Time Series ----------
 
 def normalize(x,y): # Normalize vector field
-    x /= np.sqrt(x**2 + y**2)
-    y /= np.sqrt(x**2 + y**2)
+    norm =  np.sqrt(pow(x,2) + pow(y,2))
+    x /= norm
+    y /= norm
     return x,y
 
 def computeTimeSeries(x,y,t,computeQ,a,J,current): # Compute time series of quantity (computeQ is a function that represents the equation for some quantity Q)
@@ -122,7 +123,7 @@ def computeStep(rn,vn,dt,Bz,a,J,f): # Compute single time step using Boris integ
 
 @jit(nopython = True) 
 def integrateBoris(r0,v0,dt,Bz,N,a,J,current): # Integrate trajectory for N time steps
-    r,v,B = np.zeros((3,N+1)),np.zeros((3,N+1)),np.zeros((3,N+1)) # Initialize arrays for position, velocity, and magnetic field
+    r,v,B = np.zeros((3,N+1)).astype('double'),np.zeros((3,N+1)).astype('double'),np.zeros((3,N+1)).astype('double') # Initialize arrays for position, velocity, and magnetic field
     r[:,0],v[:,0],B[:,0] = r0,v0,np.asarray((computeBx(r0[0],r0[1],a,J,current[0]),computeBy(r0[0],r0[1],a,J,current[0]),Bz)) # Initial conditions
     for i in np.linspace(1,N,N).astype('int'): # Evolve system for N time steps
         r[:,i],v[:,i],B[:,i] = computeStep(r[:,i-1],v[:,i-1],dt,Bz,a,J,current[i])    

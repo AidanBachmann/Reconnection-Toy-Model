@@ -26,7 +26,7 @@ else:
     #tau = 50e-6
     _w = (2*np.pi)/(factor*tau) # Frequency 
     _phi = 0
-    a = 1 # x position of line currents
+    a = 1.0 # x position of line currents
     
 dutyCycle = 0.75 # Duty cycle for square wave current, 0.9
 
@@ -45,7 +45,7 @@ sign = 1 # Controls sign of the current
 useNorm = True # Use normalized arrows on quiver plot
 threshold = 0 # Threshold for where to set A,B = 0 (0.99), used to avoid singularities
 
-currentProfile = 'square' # Current profile. Options are: 'sine', 'square'
+currentProfile = 'sine' # Current profile. Options are: 'sine', 'square'
 dir = 'Fields/' # Directory to save figures
 
 # ---------- Equations of Motion ----------
@@ -58,9 +58,9 @@ elif currentProfile == 'square':
         tau = (2*np.pi)/(factor*w)
         t = t%tau
         if t < dutyCycle*tau: # Returns +/-J based on duty cycle. Use dutyCycle = 0.5 for regular square wave
-            return 1
+            return 1.0
         else:
-            return -1
+            return -1.0
 
 def pxDot(x,y,t,a=a,f=f,coeff=_coeff): # Equation of motion in x
     return -1*coeff*( f(t)*np.log(pow((x-a),2) + pow(y,2)) + np.log(pow((x+a),2) + pow(y,2)) )*( (f(t)*(x-a))/(pow(x-a,2) + pow(y,2)) + (x+a)/(pow(x+a,2) + pow(y,2)) )

@@ -218,7 +218,7 @@ def plotE(p,t0,dt,N,normB): # Plot total energy as a function of time, compute v
 
 dt = 1e-3 # Time step, 1e-3
 t0 = 0 # Initial time
-N = 10000 # Number of time steps
+N = 1000 # Number of time steps
 
 print(f'Time step: {dt}s, Reconnection Time Scale: {EOM.tau}, Initial Time: {t0}s, Final Time: {t0+(N+1)*dt}s')
 
