@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 usePhysicalUnits = False # Use SI units for physical constants
 factor = 2 # Multiplier for tau
-J = 10 # Magnitude of current
+J = 1 # Magnitude of current
 d = 4 # Length scale of domain
 
 if usePhysicalUnits:

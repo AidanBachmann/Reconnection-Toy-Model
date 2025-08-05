@@ -64,7 +64,7 @@ f = 1  # Current direction (+1 or -1) for time varying current
 save = False # Save figure
 
 useNorm = True # Use normalized arrows on quiver plot
-threshold = 0 #Threshold for where to set A,B = 0, use to avoid singularities with a fine meshgrid
+threshold = 0 # Threshold for where to set A,B = 0, use to avoid singularities with a fine meshgrid
 
 xMin = findClosestGridPoint(a,X,n) # Find grid point closest to line currents
 yMin = 1/dn

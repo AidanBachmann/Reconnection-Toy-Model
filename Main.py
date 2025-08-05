@@ -3,13 +3,17 @@
 # ---------- Imports ----------
 
 import numpy as np
+import time
 import Functions as funcs
 
 # ---------- Simulation Parameters ----------
 
+dir = 'Fields/' # Directory to save figures
+showFields = True
+
 ## Defining Coefficients ##
 usePhysicalUnits = False # True --> Use SI units for physical constants, False --> Set constants to 1
-J = 10 # Magnitude of current
+J = 1 # Magnitude of current
 Bz = 1 # Axial magnetic field
 d = 4 # Length scale of domain
 
@@ -24,7 +28,7 @@ else:
     coeff = J # Setting all united quantities to 1, leading coefficient of equations of motion is just current magnitude
     tau = 1 # Reconnection timescale
     w = (2*np.pi)/(tau) # Frequency 
-    a = 1 # x position of line currents
+    a = 1.0 # x position of line currents
 
 ## Current Profile Settings ##
 currentProfile = 'square' # Current profile. Options are currently: 'sine', 'square'. Add more in Functions.py.
@@ -38,29 +42,35 @@ else:
     args = None
 
 ## Simulation Time ##
-dt = 1e-4 # Time step
+dt = 1e-3 # Time step
 t0 = 0 # Initial time
-N = 250000 # Number of time steps
+N = 10000 # Number of time steps
+tArr = np.linspace(t0,t0+(N+1)*dt,N+1) # Define time array
+currentArr = funcs.currentProf(tArr,currentProfile,args) # Compute current profile
 
 ## Initial Conditions ##
 r0 = np.asarray([a,1e-3,0]) # Particle initial position
-v0 = np.asarray([3,-1,1]) # Particle initial velocity
+v0 = np.asarray([1,1,0.5]) # Particle initial velocity
 
 funcs.printParams(dt,tau,t0,N,currentProfile,Bz,J,r0,v0) # Print simulation parameters to terminal
 
-
-dir = 'Fields/' # Directory to save figures
-
 # ---------- Simulation ----------
-'''
-r,v,B = integrateBoris(r0,v0,t0,dt,Bz,N) # Integrate trajectory
-normB = computeBNorm(B,N) # Compute field magnitude along trajectory
 
-plotJ(t0,dt,N,normB) # Plot results
-plot3D(r,v,normB)
-plot2D(r,v,normB,N)
-plotE(v,t0,dt,N,normB)
-'''
+print('Starting simulation...')
+start = time.time()
+r,v,B = funcs.integrateBoris(r0,v0,dt,Bz,N,a,J,currentArr) # Integrate trajectory
+normB = funcs.computeBNorm(B) # Compute field magnitude along trajectory
+end = time.time()
+print(f'Finished simulation in {end-start} seconds.')
+
+#funcs.plotJ(tArr,currentArr,normB) # Plot results
+#funcs.plot3D(r,v,normB,a)
+#funcs.plot2D(r,v,normB,N,a,J)
+#funcs.plotE(v,tArr,normB)
+
+if showFields: # Plot magnetic field and vector potential
+    funcs.showFields(a,d,J)
+
 
 # ---------- Multiple Trajectories ----------
 
