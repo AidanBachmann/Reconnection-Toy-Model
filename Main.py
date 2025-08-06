@@ -10,6 +10,7 @@ import Functions as funcs
 
 dir = 'Fields/' # Directory to save figures
 showFields = False # Plot magnetic field and vector potential
+plotColor = 'time' # Set colormap on plots; 'Bfield' colors trajectory by norm of magnetic field the particle experienced at that point, 'time' colors by time
 
 ## Defining Coefficients ##
 usePhysicalUnits = False # True --> Use SI units for physical constants, False --> Set constants to 1
@@ -64,8 +65,8 @@ end = time.time()
 print(f'Finished simulation in {end-start} seconds.\n')
 
 #funcs.plotJ(tArr,currentArr,normB) # Plot results
-#funcs.plot3D(r,v,normB,a)
-funcs.plot2D(r,v,normB,N,a,J,tArr)
+#funcs.plot3D(tArr,r,v,normB,a,plotColor)
+funcs.plot2D(tArr,r,v,normB,N,a,J,plotColor)
 #funcs.plotE(v,tArr,normB)
 
 if showFields: # Plot magnetic field and vector potential
