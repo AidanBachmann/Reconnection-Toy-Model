@@ -10,10 +10,17 @@ import matplotlib.pyplot as plt
 
 # ---------- Debugging ----------
 
-def printParams(dt,tau,t0,N,current,Bz,J,r0,v0): # Print simulation parameters to terminal (yes, this is unwieldy)
+def printParams(dt,tau,t0,N,current,Bz,J,r0,v0,burnIn,Nb): # Print simulation parameters to terminal (yes, this is unwieldy)
+    if Nb == None: # Check if burn-in time is defined
+        bt = None
+    else:
+        bt = Nb*dt
+    r0 = np.round(r0,3) # Round r0 and v0
+    v0 = np.round(v0,3)
     print(f'\033[1mSimulation Parameters\033[0m\nTime step: {dt}s\nNumber of Time Steps: {N}\nInitial Time: {t0}s\nFinal Time: {t0+(N+1)*dt}s')
     print(f'Reconnection Time Scale: {tau}s\nCurrent Profile: {current}\nAxial Magnetic Field: {Bz}\nCurrent Magnitude: {J}')
-    print(f'Initial Position: ({r0[0]},{r0[1]},{r0[2]})m\nInitial Velocity: ({v0[0]},{v0[1]},{v0[2]})m/s\n')
+    print(f'Initial Position: ({r0[0]},{r0[1]},{r0[2]})m\nInitial Velocity: ({v0[0]},{v0[1]},{v0[2]})m/s\nUsing Burn-In: {burnIn}')
+    print(f'Burn-In Steps: {Nb}\nBurn-In Time: {bt}\n')
 
 # ---------- Current Profile ----------
     
@@ -132,6 +139,19 @@ def integrateBoris(r0,v0,dt,Bz,N,a,J,current): # Integrate trajectory for N time
 
 def computeBNorm(B): # Compute magnitude of magnetic field
     return np.sqrt(pow(B[0,:],2) + pow(B[1,:],2) + pow(B[2,:],2))
+
+def burnIn(r0,v0,t0,dt,Bz,N,Nb,a,J,currentProfile,args): # Burn in function, returns new initial conditions; Nb is number of burn-in steps.
+    tArr = np.linspace(t0,t0+(N+Nb)*dt,N+Nb+1,dtype='double') # Define time array
+    current = currentProf(tArr,currentProfile,args).astype('double') # Compute current profile
+    rOld,vOld = r0,v0
+    for i in np.linspace(0,Nb-1,Nb).astype('int'): # Evolve system for Nb time steps, only store current step and previous step
+        rNew,vNew,_ = computeStep(rOld,vOld,dt,Bz,a,J,current[i]) # Push particle
+        rOld = rNew
+        vOld = vNew
+    tArr = tArr[Nb:] # Remove burn-in steps from time and current arrays
+    currentArr = current[Nb:]
+    t0 = tArr[0] # Reset initial time
+    return rNew,vNew,t0,tArr,currentArr # Return new initial conditions
 
 # ---------- Integrating Multiple Trajectories ----------
 
