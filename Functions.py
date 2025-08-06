@@ -194,7 +194,7 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
     # to the most extreme bending of the particle trajectory).
 
     ax[0,0].scatter(r[0,0],v[0,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot x phase space
-    c = ax[0,0].scatter(r[0,1:],v[0,1:],c=colors[1:],s=size)
+    ax[0,0].scatter(r[0,1:],v[0,1:],c=colors[1:],s=size)
     ax[0,0].set_xlabel('x')
     ax[0,0].set_ylabel(r'$P_x$')
     ax[0,0].set_title(f'x Phase Space, J = {round(J,2)}')
@@ -202,7 +202,7 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
     ax[0,0].legend()
     
     ax[0,1].scatter(r[1,0],v[1,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot y phase space
-    c = ax[0,1].scatter(r[1,1:],v[1,1:],c=colors[1:],s=size)
+    ax[0,1].scatter(r[1,1:],v[1,1:],c=colors[1:],s=size)
     ax[0,1].set_xlabel('y')
     ax[0,1].set_ylabel(r'$P_y$')
     ax[0,1].set_title(f'y Phase Space, J = {round(J,2)}')
@@ -210,7 +210,7 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
     ax[0,1].legend()
     
     ax[1,0].scatter(r[2,0],v[2,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot z phase space
-    c = ax[1,0].scatter(r[2,1:],v[2,1:],c=colors[1:],s=size)
+    ax[1,0].scatter(r[2,1:],v[2,1:],c=colors[1:],s=size)
     ax[1,0].set_xlabel('z')
     ax[1,0].set_ylabel(r'$P_z$')
     ax[1,0].set_title(rf'z Phase Space, J = {round(J,2)}')
@@ -218,7 +218,7 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
     ax[1,0].legend()
   
     ax[1,1].scatter(r[0,0],r[1,0],c='r',marker='*',s=55*size,label='Initial Position') # Plot real-space trajectory flattened to xy plane
-    c = ax[1,1].scatter(r[0,1:],r[1,1:],c=colors[1:],s=size)
+    ax[1,1].scatter(r[0,1:],r[1,1:],c=colors[1:],s=size)
     ax[1,1].scatter(-a,0,marker='+',c='b',s=50) # Draw position of lines currents in xy plane
     ax[1,1].scatter(a,0,marker='+',c='b',s=50,label='Line Current')
     ax[1,1].set_xlabel('x')
@@ -241,10 +241,15 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
 
     return fig,ax
     
-def plot3D(tArr,r,v,normB,a,fig=None,ax=None): # Plot 3D real-space and momentum-space plots
+def plot3D(tArr,r,v,normB,a,plotColor,fig=None,ax=None): # Plot 3D real-space and momentum-space plots
     print('Plotting three-dimensional trajectories.')
     fig = plt.figure(figsize=(16,9.5)) # Set figure size
     size = 5 # Set size of points to plot
+
+    if plotColor == 'time': # Set plot color
+        colors = plt.cm.gist_rainbow(tArr/np.max(tArr))
+    elif plotColor == 'Bfield':
+        colors = normB
     
     ax = fig.add_subplot(1,2,1,projection='3d') # Plot position space
     ax.scatter(r[0,0],r[1,0],r[2,0],c='r',marker='*',s=15*size,label='Initial Position') # Highlight initial position of particle
@@ -253,9 +258,7 @@ def plot3D(tArr,r,v,normB,a,fig=None,ax=None): # Plot 3D real-space and momentum
     zArr = np.asarray([min(r[2,:]),max(r[2,:])])
     ax.plot(aArr,zroArr,zArr,c='b',label='Line Current') # Draw position of line currents
     ax.plot(-aArr,zroArr,zArr,c='b')
-    c = ax.scatter(r[0,1:],r[1,1:],r[2,1:],c=normB[1:],s=size) # Plot trajectory
-    c = fig.colorbar(c,ax=ax,fraction=0.046,pad=0.1)
-    c.set_label('|B|',rotation=360)
+    ax.scatter(r[0,1:],r[1,1:],r[2,1:],c=colors[1:],s=size) # Plot trajectory
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
@@ -269,15 +272,21 @@ def plot3D(tArr,r,v,normB,a,fig=None,ax=None): # Plot 3D real-space and momentum
     
     ax = fig.add_subplot(1,2,2,projection='3d') # Plot momentum space
     ax.scatter(v[0,0],v[1,0],v[2,0],c='r',marker='*',s=15*size,label='Initial Position') # Highlight initial position of particle
-    c = ax.scatter(v[0,1:],v[1,1:],v[2,1:],c=normB[1:],s=size)
-    c = fig.colorbar(c,ax=ax,fraction=0.046,pad=0.04)
-    c.set_label('|B|',rotation=360)
+    ax.scatter(v[0,1:],v[1,1:],v[2,1:],c=colors[1:],s=size)
     ax.set_xlabel(r'$P_x$')
     ax.set_ylabel(r'$P_y$')
     ax.set_zlabel(r'$P_z$')
     ax.set_title('3D Momentum Space Trajectory')
     ax.grid()
     ax.legend()
+
+    if plotColor == 'time':
+        c = fig.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(vmin=tArr[1],vmax=tArr[-1]),cmap='gist_rainbow'),ax=ax,fraction=0.046,pad=0.1)
+        c.set_label('Time (s)',rotation=360)
+    elif plotColor == 'Bfield':
+        c = fig.colorbar(c,ax=ax)
+        c.set_label('|B|',rotation=360)
+
     plt.show()
     
 def plotJ(time,current,normB): # Plot current profile

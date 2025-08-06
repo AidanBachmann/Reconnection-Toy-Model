@@ -64,10 +64,10 @@ normB = funcs.computeBNorm(B) # Compute field magnitude along trajectory
 end = time.time()
 print(f'Finished simulation in {end-start} seconds.\n')
 
-#funcs.plotJ(tArr,currentArr,normB) # Plot results
-#funcs.plot3D(tArr,r,v,normB,a,plotColor)
+funcs.plotJ(tArr,currentArr,normB) # Plot results
+funcs.plot3D(tArr,r,v,normB,a,plotColor)
 funcs.plot2D(tArr,r,v,normB,N,a,J,plotColor)
-#funcs.plotE(v,tArr,normB)
+funcs.plotE(v,tArr,normB)
 
 if showFields: # Plot magnetic field and vector potential
     funcs.showFields(a,d,J)
