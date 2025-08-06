@@ -23,7 +23,7 @@ def printParams(dt,tau,t0,N,current,Bz,J,r0,v0,burnIn,Nb): # Print simulation pa
     print(f'Burn-In Steps: {Nb}\nBurn-In Time: {bt}\n')
 
 # ---------- Current Profile ----------
-    
+ 
 def currentProf(t,profileType,args): # Return current profile; t is time array, profileType is a string ('square' or 'sine'), and args as an array of parameters for the profile
     if profileType == 'square':
         # args must by an array of the form args = np.asarray([w,dutyCycle]), define in main
@@ -38,7 +38,7 @@ def currentProf(t,profileType,args): # Return current profile; t is time array, 
         ## Add extra elif statements below to define new current profiles ##
     else:
         print('Unrecognized current profile, defaulting to constant.')
-        return np.ones([len(t)]).astype('double') # Constant current profile
+        return np.ones((len(t))).astype('double') # Constant current profile
     
 # ---------- Equations of Motion ----------
 # These functions are deprecated, they were to be used in an old version with a leapfrog integrator. 
@@ -140,16 +140,16 @@ def integrateBoris(r0,v0,dt,Bz,N,a,J,current): # Integrate trajectory for N time
 def computeBNorm(B): # Compute magnitude of magnetic field
     return np.sqrt(pow(B[0,:],2) + pow(B[1,:],2) + pow(B[2,:],2))
 
-def burnIn(r0,v0,t0,dt,Bz,N,Nb,a,J,currentProfile,args): # Burn in function, returns new initial conditions; Nb is number of burn-in steps.
-    tArr = np.linspace(t0,t0+(N+Nb)*dt,N+Nb+1,dtype='double') # Define time array
-    current = currentProf(tArr,currentProfile,args).astype('double') # Compute current profile
+@jit(nopython = True) 
+def burnIn(r0,v0,t0,dt,Bz,N,Nb,a,J,tArr,currentArr): # Burn in function, returns new initial conditions; Nb is number of burn-in steps.
+    print(f'Running burn-in for {Nb} steps...\n')
     rOld,vOld = r0,v0
     for i in np.linspace(0,Nb-1,Nb).astype('int'): # Evolve system for Nb time steps, only store current step and previous step
-        rNew,vNew,_ = computeStep(rOld,vOld,dt,Bz,a,J,current[i]) # Push particle
+        rNew,vNew,_ = computeStep(rOld,vOld,dt,Bz,a,J,currentArr[i]) # Push particle
         rOld = rNew
         vOld = vNew
     tArr = tArr[Nb:] # Remove burn-in steps from time and current arrays
-    currentArr = current[Nb:]
+    currentArr = currentArr[Nb:]
     t0 = tArr[0] # Reset initial time
     return rNew,vNew,t0,tArr,currentArr # Return new initial conditions
 
@@ -205,7 +205,7 @@ def plot2D(tArr,r,v,normB,N,a,J,plotColor,fig=None,ax=None): # Make two dimensio
         size = 5
 
     if plotColor == 'time': # Set plot color
-        colors = plt.cm.gist_rainbow(tArr/np.max(tArr))
+        colors = plt.cm.gist_rainbow((tArr-tArr[0])/np.max(tArr - tArr[0]))
     elif plotColor == 'Bfield':
         colors = normB
     
@@ -267,7 +267,7 @@ def plot3D(tArr,r,v,normB,a,plotColor,fig=None,ax=None): # Plot 3D real-space an
     size = 5 # Set size of points to plot
 
     if plotColor == 'time': # Set plot color
-        colors = plt.cm.gist_rainbow(tArr/np.max(tArr))
+        colors = plt.cm.gist_rainbow((tArr-tArr[0])/np.max(tArr - tArr[0]))
     elif plotColor == 'Bfield':
         colors = normB
     
@@ -320,22 +320,32 @@ def plotJ(time,current,normB): # Plot current profile
     plt.grid()
     plt.show()
     
-def plotE(p,time,normB): # Plot total energy as a function of time, compute varaince to check for conservation
+def plotE(p,time,normB,plotEfluctuations): # Plot total energy as a function of time, compute varaince to check for conservation
     print('Plotting total energy time series.')
     E = np.sqrt(pow(p[0,:],2) + pow(p[1,:],2) + pow(p[2,:],2))
     var = str(np.var(E)/pow(np.min(E),2)) # Compute variance of energy normalized by smallest energy scale
     length = len(var)
     plt.figure(figsize=(12,9.5))
+    if plotEfluctuations:
+        plt.ylabel('Total Energy Fluctuations')
+        plt.title(fr'Fluctuations in Total Energy Around $\left<E\right>$ = {np.round(np.average(E),5)}')
+        E -= np.average(E) # Subtract off average to highlight fluctuations
+    else:
+        plt.yscale('log')
+        plt.ylabel('Total Energy')
+        plt.title('Time Evolution of Total Energy')
+        padding = np.std(E)/10 # Padding for y limits
+        Elb = min(E)
+        Eub = max(E)
+        plt.ylim([Elb*(1-padding),Eub*(1+padding)])
+        plt.yticks(np.arange(Elb,Eub,(Eub-Elb)/4))
+        plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%6f'))
     plt.plot(time,E,label=f'Normalized Variance of Energy = {var[0:6]+var[length-4:length]}') # Plot energy time series
     plt.scatter(time,E,c=normB) # Scatter plot on top of line to color with norm of B
     c = plt.colorbar()
     c.set_label('|B|',rotation=360) # Define colorbar
     plt.grid()
-    padding = 0.05 # Padding for y limits
-    plt.ylim([min(E)*(1-padding),max(E)*(1+padding)])
     plt.xlabel('Time (s)')
-    plt.ylabel('Total Energy')
-    plt.title('Time Evolution of Total Energy')
     plt.legend()
     plt.show()
 
